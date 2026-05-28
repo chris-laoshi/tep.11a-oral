@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TEP11A Oral Test</title>
+
+  <!-- Dekko font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dekko&display=swap" rel="stylesheet">
+
+  <!-- Preload images -->
+  <link rel="preload" as="image" href="https://i.postimg.cc/Dyvf91Gs/q1-tep11a-oral.webp">
+  <link rel="preload" as="image" href="https://i.postimg.cc/L694cjPP/q4-tep11a-oral.webp">
+  <link rel="preload" as="image" href="https://i.postimg.cc/m2LZv79C/q7-tep11a-oral.webp">
+
+  <style>
+    :root {
+      --maxw: 900px;
+      --radius: 18px;
+      --border: #dcdcdc;
+      --muted: #666;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: "Dekko", system-ui, sans-serif;
+      background: #ffffff;
+      margin: 0;
+      padding: 16px;
+      color: #111;
+    }
+
+    .container {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 400;
+    }
+
+    .counter {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .question {
+      font-size: clamp(28px, 6vw, 44px);
+      line-height: 1.25;
+      font-weight: 400;
+      cursor: pointer;
+      user-select: none;
+      white-space: pre-line;
+    }
+
+    .question.hiddenQuestion {
+      visibility: hidden;
+    }
+
+    .imgWrap {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .revealBtn {
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid #ccc;
+      background: #fff;
+      font-family: "Dekko", system-ui, sans-serif;
+      font-size: 20px;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .revealBtn:active {
+      transform: scale(0.98);
+    }
+
+    img {
+      width: 100%;
+      max-height: 45vh;
+      object-fit: contain;
+      border-radius: var(--radius);
+      display: none;
+    }
+
+    .status {
+      font-size: 14px;
+      color: var(--muted);
+      min-height: 18px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
+    button.nav {
+      padding: 18px 14px;
+      border-radius: 18px;
+      border: 1px solid #ccc;
+      background: #fff;
+      font-family: "Dekko", system-ui, sans-serif;
+      font-size: 20px;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    button.nav:disabled {
+      background: #f3f3f3;
+      color: #888;
+      cursor: not-allowed;
+    }
+
+    button.nav:active {
+      transform: scale(0.97);
+    }
+
+    @media (min-width: 900px) {
+      body { padding: 24px; }
+      .card { padding: 26px; }
+      button.nav { padding: 20px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="topbar">
+      <h1>TEP11A Oral Test</h1>
+      <div class="counter" id="counter"></div>
+    </div>
+
+    <div class="card">
+      <div class="question" id="question" title="Click to hide/show question"></div>
+
+      <div class="imgWrap" id="imgWrap">
+        <button class="revealBtn" id="revealBtn" type="button">Reveal Image</button>
+        <img id="image" alt="Question image" />
+        <div class="status" id="status"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="nav" id="back">Back</button>
+      <button class="nav" id="reset">Reset</button>
+      <button class="nav" id="next">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        text: "What does she do?",
+        image: "https://i.postimg.cc/Dyvf91Gs/q1-tep11a-oral.webp"
+      },
+
+      {
+        text: "What do I do?"
+      },
+
+      {
+        text: "What does your dad do?"
+      },
+
+      {
+        text: "Where do Al and Hank work?",
+        image: "https://i.postimg.cc/L694cjPP/q4-tep11a-oral.webp"
+      },
+
+      {
+        text: "My friend is a doctor. Where does he work?"
+      },
+
+      {
+        text: "Where do I work?"
+      },
+
+      {
+        text: "What does he want to be?",
+        image: "https://i.postimg.cc/m2LZv79C/q7-tep11a-oral.webp"
+      },
+
+      {
+        text: "Bob likes to paint and draw pictures. What does he want to be?"
+      },
+
+      {
+        text: "What do you want to be?"
+      },
+
+      {
+        text: "Ask me a question with 'what' or 'where'."
+      }
+    ];
+
+    let idx = 0;
+
+    let revealed = new Array(questions.length).fill(false);
+    let hiddenQuestions = new Array(questions.length).fill(false);
+
+    const counterEl = document.getElementById("counter");
+    const questionEl = document.getElementById("question");
+    const imgWrapEl = document.getElementById("imgWrap");
+    const revealBtn = document.getElementById("revealBtn");
+    const imageEl = document.getElementById("image");
+    const statusEl = document.getElementById("status");
+
+    const backBtn = document.getElementById("back");
+    const nextBtn = document.getElementById("next");
+    const resetBtn = document.getElementById("reset");
+
+    function render() {
+      const q = questions[idx];
+
+      counterEl.textContent = `Question ${idx + 1} / ${questions.length}`;
+      questionEl.textContent = `${idx + 1}. ${q.text}`;
+      statusEl.textContent = "";
+
+      // Question hide/show
+      if (hiddenQuestions[idx]) {
+        questionEl.classList.add("hiddenQuestion");
+      } else {
+        questionEl.classList.remove("hiddenQuestion");
+      }
+
+      // Image logic
+      if (q.image) {
+        imgWrapEl.style.display = "flex";
+
+        if (revealed[idx]) {
+          revealBtn.style.display = "none";
+          imageEl.style.display = "block";
+          imageEl.src = q.image;
+        } else {
+          revealBtn.style.display = "inline-block";
+          imageEl.style.display = "none";
+          imageEl.removeAttribute("src");
+        }
+
+      } else {
+        imgWrapEl.style.display = "none";
+        imageEl.style.display = "none";
+        imageEl.removeAttribute("src");
+      }
+
+      backBtn.disabled = idx === 0;
+      nextBtn.disabled = idx === questions.length - 1;
+    }
+
+    // Click question to hide/show it
+    questionEl.onclick = () => {
+      hiddenQuestions[idx] = !hiddenQuestions[idx];
+      render();
+    };
+
+    // Reveal image
+    revealBtn.onclick = () => {
+      const q = questions[idx];
+      if (!q.image) return;
+
+      revealed[idx] = true;
+      imageEl.src = q.image;
+
+      revealBtn.style.display = "none";
+      imageEl.style.display = "block";
+      statusEl.textContent = "";
+    };
+
+    // Image load fail
+    imageEl.addEventListener("error", () => {
+      statusEl.textContent = "Image failed to load.";
+      imageEl.style.display = "none";
+      revealBtn.style.display = "inline-block";
+      revealed[idx] = false;
+    });
+
+    // Navigation
+    backBtn.onclick = () => {
+      if (idx > 0) {
+        idx--;
+        render();
+      }
+    };
+
+    nextBtn.onclick = () => {
+      if (idx < questions.length - 1) {
+        idx++;
+        render();
+      }
+    };
+
+    // Reset everything
+    resetBtn.onclick = () => {
+      idx = 0;
+
+      revealed = new Array(questions.length).fill(false);
+      hiddenQuestions = new Array(questions.length).fill(false);
+
+      render();
+    };
+
+    // Keyboard shortcuts
+    document.addEventListener("keydown", e => {
+      if (e.key === "ArrowLeft") backBtn.click();
+      if (e.key === "ArrowRight") nextBtn.click();
+      if (e.key === "Home") resetBtn.click();
+
+      // Reveal image
+      if (e.key.toLowerCase() === "r") {
+        revealBtn.click();
+      }
+
+      // Hide/show question
+      if (e.key.toLowerCase() === "h") {
+        questionEl.click();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
